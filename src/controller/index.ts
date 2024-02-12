@@ -1,12 +1,17 @@
-import { IncomingMessage } from 'http';
+import { createUser } from '../endpoints/create';
+import { getAllUsers, getUser } from '../endpoints/read';
+import { ReqType, ResType, User } from '../types';
 
-export default function chooseEndpoint(pathname: string, req: IncomingMessage) {
+export default function chooseEndpoint(req: ReqType, res: ResType, users: User[], pathname: string) {
   switch (true) {
     case pathname === '/users' && req.method === 'GET':
-      console.log('true users');
+      getAllUsers(res, users);
       break;
-    case pathname === '/falsers' && req.method === 'GET':
-      console.log('false users');
+    case pathname && pathname?.startsWith('/users/') && req.method === 'GET':
+      getUser(res, users, pathname);
+      break;
+    case pathname === '/users' && req.method === 'POST':
+      createUser(req, res, users);
       break;
 
     default:
