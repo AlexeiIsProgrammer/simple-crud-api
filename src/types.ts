@@ -4,3 +4,5 @@ export type User = {
   age: number;
   hobbies: string[];
 };
+
+export type BodyUser = Omit<User, 'id'>;
