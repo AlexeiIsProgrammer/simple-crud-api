@@ -16,7 +16,7 @@
   },
   "scripts": {
     "start:dev": "nodemon index.ts",
-    "start:prod": "node src/index.js"
+    "start:prod": "tsc && node src/index.js"
   },
   "keywords": [],
   "author": "",
