@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 import { createServer, request } from 'http';
 import { parse } from 'url';
 import { ResType, User } from './types';
-import chooseEndpoint from './controller/index.ts';
+import chooseEndpoint from './controller';
 import cluster from 'cluster';
 import os from 'os';
 

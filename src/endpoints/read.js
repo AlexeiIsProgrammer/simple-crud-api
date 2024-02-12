@@ -9,6 +9,7 @@ const getAllUsers = (res, users) => {
 exports.getAllUsers = getAllUsers;
 const getUser = (res, users, pathname) => {
     const id = pathname.split('/')[2];
+    console.log(id);
     if (!(0, uuid_1.validate)(id)) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ message: 'UserId is invalid (not uuid)' }));
