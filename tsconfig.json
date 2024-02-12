@@ -6,9 +6,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "allowJs": true
+    "allowJs": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true
   },
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

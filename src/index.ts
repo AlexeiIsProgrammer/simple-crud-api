@@ -1,24 +1,59 @@
 import { config } from 'dotenv';
-import http from 'http';
+import { createServer, request } from 'http';
 import { parse } from 'url';
-import { ReqType, ResType, User } from './types';
-import chooseEndpoint from './controller';
+import { ResType, User } from './types';
+import chooseEndpoint from './controller/index.ts';
+import cluster from 'cluster';
+import os from 'os';
 
 config();
 
+const CPUs = os.cpus().length;
+const port = Number(process.env.PORT) || 4000;
 const users: User[] = [];
 
-const server = http.createServer((req, res) => {
-  const { pathname } = parse(req.url || '', true);
+if (cluster.isPrimary) {
+  console.log(`Master ${process.pid} is running`);
 
-  chooseEndpoint(req, res, users, pathname || '');
-});
+  for (let i = 0; i < CPUs; i++) {
+    cluster.fork();
+  }
 
-server.listen(process.env.PORT, () => {
-  console.log(`Server is running on http://localhost:${process.env.PORT}`);
-});
+  let nextWorkerIndex = 0;
+  const workers = Object.values(cluster?.workers || {});
 
-server.on('error', (err: Error, req: ReqType, res: ResType) => {
-  res.writeHead(500, { 'Content-Type': 'application/json' });
-  res.end(JSON.stringify({ message: 'Technical work is underway, come back later' }));
-});
+  const loadBalancer = createServer((req, res) => {
+    const worker = workers[nextWorkerIndex];
+    const workerPort = port + 1 + (nextWorkerIndex % CPUs);
+    const targetUrl = `http://localhost:${workerPort}${req.url}`;
+
+    console.log(`Forwarding request to worker ${worker?.process.pid}: ${targetUrl}`);
+
+    const proxyReq = request(targetUrl, { method: req.method, headers: req.headers }, (proxyRes) => {
+      res.writeHead(proxyRes.statusCode || 505, proxyRes.headers);
+      proxyRes.pipe(res, { end: true });
+    });
+
+    req.pipe(proxyReq, { end: true });
+
+    nextWorkerIndex = (nextWorkerIndex + 1) % CPUs;
+  });
+
+  loadBalancer.listen(port);
+} else {
+  const workerPort = port + cluster.worker!.id;
+  const server = createServer((req, res) => {
+    const { pathname } = parse(req.url || '', true);
+
+    chooseEndpoint(req, res, users, pathname || '');
+
+    server.on('error', (res: ResType) => {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ message: 'Technical work is underway, come back later' }));
+    });
+  });
+
+  server.listen(workerPort, () => {
+    console.log(`Worker ${cluster.worker!.id} is listening on port ${workerPort}`);
+  });
+}
