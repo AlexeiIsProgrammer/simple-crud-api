@@ -9,3 +9,5 @@
 ### 4. script `start:multi` starts load balancer mode
 
 ### 5. script `start:prod` compiles from ts to js and runs js
+
+### 6. script `test` for running tests

@@ -42,20 +42,22 @@ if (process.env.MULTI) {
     loadBalancer.listen(port);
   } else {
     const workerPort = port + cluster.worker!.id;
-    const server = createServer((req, res) => {
-      chooseEndpoint(req, res, users);
-    });
+    const server = createServerFn();
 
     server.listen(workerPort, () => {
       console.log(`Worker ${cluster.worker!.id} is listening on port ${workerPort}`);
     });
   }
 } else {
-  const server = createServer((req, res) => {
-    chooseEndpoint(req, res, users);
-  });
+  const server = createServerFn();
 
   server.listen(port, () => {
     console.log(`Server is listening on port ${port}`);
+  });
+}
+
+export function createServerFn() {
+  return createServer((req, res) => {
+    chooseEndpoint(req, res, users);
   });
 }
