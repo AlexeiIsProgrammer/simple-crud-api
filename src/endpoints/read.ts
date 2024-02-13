@@ -7,7 +7,8 @@ export const getAllUsers = (res: ResType, users: User[]) => {
 };
 
 export const getUser = (res: ResType, users: User[], pathname: string) => {
-  const id = pathname.split('/')[2];
+  const id = pathname.split('/')[3];
+
   console.log(id);
 
   if (!validate(id)) {

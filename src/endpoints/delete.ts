@@ -2,7 +2,7 @@ import { validate } from 'uuid';
 import { ResType, User } from '../types';
 
 export const deleteUser = (res: ResType, users: User[], pathname: string) => {
-  const id = pathname.split('/')[2];
+  const id = pathname.split('/')[3];
 
   if (!validate(id)) {
     res.writeHead(400, { 'Content-Type': 'application/json' });

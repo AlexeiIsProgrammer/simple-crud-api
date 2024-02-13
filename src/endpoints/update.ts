@@ -2,7 +2,7 @@ import { validate } from 'uuid';
 import { ReqType, ResType, User } from '../types';
 
 export const updateUser = (req: ReqType, res: ResType, users: User[], pathname: string) => {
-  const id = pathname.split('/')[2];
+  const id = pathname.split('/')[3];
 
   if (!validate(id)) {
     res.writeHead(400, { 'Content-Type': 'application/json' });
