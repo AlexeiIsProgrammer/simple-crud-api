@@ -6,6 +6,10 @@ const server = createServerFn();
 
 describe('Server 3 scenarios', () => {
   let user: User;
+  beforeAll(() => {
+    jest.clearAllMocks();
+  });
+
   test('should get an empty array', async () => {
     const users: User[] = [];
     const { statusCode, body } = await supertest(server).get('/api/users');
@@ -21,9 +25,9 @@ describe('Server 3 scenarios', () => {
       hobbies: ['sport', 'coding'],
     };
 
-    const { body } = await supertest(server).post('/api/users').send(newUser);
-
-    expect(body.statusCode).toBe(201);
+    const resp = await supertest(server).post('/api/users').send(newUser);
+    user = resp.body;
+    expect(resp.statusCode).toBe(201);
     expect(user).toHaveProperty('id');
     expect(user.username).toEqual(newUser.username);
     expect(user.age).toEqual(newUser.age);

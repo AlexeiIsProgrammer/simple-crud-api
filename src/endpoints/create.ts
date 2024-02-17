@@ -14,6 +14,14 @@ export const createUser = (req: ReqType, res: ResType, users: User[]) => {
         throw new Error();
       }
 
+      if (
+        typeof bodyUser.age !== 'number' ||
+        typeof bodyUser.username !== 'string' ||
+        typeof bodyUser.hobbies !== 'object'
+      ) {
+        throw new Error();
+      }
+
       const newUser: User = { ...bodyUser, id: v4() };
 
       users.push(newUser);

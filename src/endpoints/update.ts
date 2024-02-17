@@ -18,6 +18,15 @@ export const updateUser = (req: ReqType, res: ResType, users: User[], pathname: 
     try {
       const updateUser: Partial<User> = JSON.parse(body);
       const index = users.findIndex((user) => user.id === id);
+
+      if (
+        typeof updateUser.age !== 'number' ||
+        typeof updateUser.username !== 'string' ||
+        typeof updateUser.hobbies !== 'object'
+      ) {
+        throw new Error();
+      }
+
       if (index === -1) {
         res.writeHead(404, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ message: 'User doesnt exist' }));
